@@ -43,7 +43,8 @@
                 ["19. REACTIVE_MULTIWIDE", 19],
                 ["20. REACTIVE_MULTINEXUS", 20],
                 ["21. SPLASH", 21],
-                ["22. SOLID_SPLASH", 22]
+                ["22. SOLID_SPLASH", 22],
+                ["23. CUSTOM", 23]
               ]
             },
             {
@@ -58,6 +59,12 @@
               "label": "Color",
               "type": "color",
               "content": ["id_qmk_rgb_matrix_color", 3, 4]
+            },
+            {
+              "showIf": "{id_qmk_rgb_matrix_effect} == 23",
+              "label": "Color 2",
+              "type": "color",
+              "content": ["id_qmk_rgb_matrix_color2", 3, 5]
             }
           ]
         }

@@ -682,6 +682,11 @@ void via_qmk_rgb_matrix_get_value(uint8_t *data) {
             value_data[1] = rgb_matrix_get_sat();
             break;
         }
+        case id_qmk_rgb_matrix_color2: {
+            value_data[0] = rgb_matrix_get_hue();
+            value_data[1] = rgb_matrix_get_sat();
+            break;
+        }
     }
 }
 
@@ -708,6 +713,10 @@ void via_qmk_rgb_matrix_set_value(uint8_t *data) {
             break;
         }
         case id_qmk_rgb_matrix_color: {
+            rgb_matrix_sethsv_noeeprom(value_data[0], value_data[1], rgb_matrix_get_val());
+            break;
+        }
+        case id_qmk_rgb_matrix_color2: {
             rgb_matrix_sethsv_noeeprom(value_data[0], value_data[1], rgb_matrix_get_val());
             break;
         }
