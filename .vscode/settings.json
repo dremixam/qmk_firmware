@@ -36,7 +36,9 @@
         "xutility": "c",
         "random": "c",
         "cmath": "c",
-        "xlocale": "c"
+        "xlocale": "c",
+        "iterator": "c",
+        "xmemory": "c"
     },
     "[markdown]": {
         "editor.trimAutoWhitespace": false,
