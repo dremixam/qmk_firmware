@@ -4,65 +4,39 @@ RGB_MATRIX_EFFECT(TYPING_REACTIVE)
 
 #ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
 
-#    define RED 0
-#    define GREEN 120
-#    define BLUE 240
-
-// Fonction de conversion HSV -> RGB
-RGB hsvToRgb(HSV hsv) {
-    float r, g, b;
-    float h = hsv.h / 60.0;
-    float s = hsv.s / 255.0;
-    float v = hsv.v / 255.0;
-
-    int i = (int)h;
-    float f = h - i;
-    float p = v * (1 - s);
-    float q = v * (1 - s * f);
-    float t = v * (1 - s * (1 - f));
-
-    switch (i) {
-        case 0: r = v; g = t; b = p; break;
-        case 1: r = q; g = v; b = p; break;
-        case 2: r = p; g = v; b = t; break;
-        case 3: r = p; g = q; b = v; break;
-        case 4: r = t; g = p; b = v; break;
-        default: r = v; g = p; b = q; break;
-    }
-
-    RGB rgb = { (int)(r * 255), (int)(g * 255), (int)(b * 255) };
-    return rgb;
-}
+#    define RED (uint8_t)((0 * 255) / 360)
+#    define GREEN (uint8_t)((120 * 255) / 360)
+#    define BLUE (uint8_t)((240 * 255) / 360)
 
 // Fonction de conversion RGB -> HSV
-HSV rgbToHsv(RGB rgb) {
-    float r = rgb.r / 255.0;
-    float g = rgb.g / 255.0;
-    float b = rgb.b / 255.0;
+HSV rgb_to_hsv(RGB rgb) {
+    HSV hsv;
+    uint8_t rgb_min, rgb_max;
 
-    float max = fmaxf(fmaxf(r, g), b);
-    float min = fminf(fminf(r, g), b);
-    float delta = max - min;
+    rgb_min = rgb.r < rgb.g ? (rgb.r < rgb.b ? rgb.r : rgb.b) : (rgb.g < rgb.b ? rgb.g : rgb.b);
+    rgb_max = rgb.r > rgb.g ? (rgb.r > rgb.b ? rgb.r : rgb.b) : (rgb.g > rgb.b ? rgb.g : rgb.b);
 
-    float h, s, v = max;
-
-    if (delta == 0) {
-        h = 0;
-    } else if (max == r) {
-        h = 60 * fmod(((g - b) / delta), 6);
-    } else if (max == g) {
-        h = 60 * (((b - r) / delta) + 2);
-    } else {
-        h = 60 * (((r - g) / delta) + 4);
+    hsv.v = rgb_max;
+    if (hsv.v == 0) {
+        hsv.h = 0;
+        hsv.s = 0;
+        return hsv;
     }
 
-    if (max == 0) {
-        s = 0;
-    } else {
-        s = delta / max;
+    hsv.s = 255 * (rgb_max - rgb_min) / hsv.v;
+    if (hsv.s == 0) {
+        hsv.h = 0;
+        return hsv;
     }
 
-    HSV hsv = { (int)(h < 0 ? h + 360 : h), (int)(s * 255), (int)(v * 255) };
+    if (rgb_max == rgb.r) {
+        hsv.h = 0 + 43 * (rgb.g - rgb.b) / (rgb_max - rgb_min);
+    } else if (rgb_max == rgb.g) {
+        hsv.h = 85 + 43 * (rgb.b - rgb.r) / (rgb_max - rgb_min);
+    } else {
+        hsv.h = 171 + 43 * (rgb.r - rgb.g) / (rgb_max - rgb_min);
+    }
+
     return hsv;
 }
 
@@ -74,8 +48,8 @@ int interpolate(int start, int end, int offset) {
 // Fonction principale pour interpoler entre deux couleurs HSV
 HSV interpolateHSV(HSV start, HSV end, int offset) {
     // Conversion HSV -> RGB
-    RGB rgbStart = hsvToRgb(start);
-    RGB rgbEnd = hsvToRgb(end);
+    RGB rgbStart = rgb_matrix_hsv_to_rgb(start);
+    RGB rgbEnd = rgb_matrix_hsv_to_rgb(end);
     
     // Interpolation directe en RGB
     RGB rgbResult;
@@ -84,7 +58,7 @@ HSV interpolateHSV(HSV start, HSV end, int offset) {
     rgbResult.b = interpolate(rgbStart.b, rgbEnd.b, offset);
     
     // Conversion RGB -> HSV
-    HSV hsvResult = rgbToHsv(rgbResult);
+    HSV hsvResult = rgb_to_hsv(rgbResult);
     
     return hsvResult;
 }
