@@ -1,3 +1,9 @@
+# Custom firmware for Keychron K10 Pro
+
+Adds "DrEmixam Special" RGB mod
+
+![VIA](https://github.com/dremixam/qmk_firmware/assets/1046677/a408d957-2f43-4480-ae85-8ffba0ec4c24)
+
 # Quantum Mechanical Keyboard Firmware
 
 [![Current Version](https://img.shields.io/github/tag/qmk/qmk_firmware.svg)](https://github.com/qmk/qmk_firmware/tags)
