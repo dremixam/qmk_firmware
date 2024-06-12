@@ -15,6 +15,9 @@
  */
 
 #include QMK_KEYBOARD_H
+#include "via.h"
+#include "eeprom.h"
+#include "quantum.h"
 
 #define RGB_MATRIX_STARTUP_MODE RGB_MATRIX_CUSTOM_TYPING_REACTIVE
 
@@ -25,6 +28,22 @@ enum layers{
   WIN_BASE,
   WIN_FN
 };
+
+HSV BASE_COLOR_HSV = DEFAULT_BASE_COLOR_HSV;
+HSV BASE_FCT_COLOR_HSV = DEFAULT_BASE_FCT_COLOR_HSV;
+HSV ACCENT_COLOR_HSV = DEFAULT_ACCENT_COLOR_HSV;
+HSV PLAYSTATION_TRIANGLE_HSV = DEFAULT_PLAYSTATION_TRIANGLE_HSV;
+HSV PLAYSTATION_SQUARE_HSV = DEFAULT_PLAYSTATION_SQUARE_HSV;
+HSV PLAYSTATION_CIRCLE_HSV = DEFAULT_PLAYSTATION_CIRCLE_HSV;
+HSV PLAYSTATION_CROSS_HSV = DEFAULT_PLAYSTATION_CROSS_HSV;
+
+extern HSV BASE_COLOR_HSV;
+extern HSV BASE_FCT_COLOR_HSV;
+extern HSV ACCENT_COLOR_HSV;
+extern HSV PLAYSTATION_TRIANGLE_HSV;
+extern HSV PLAYSTATION_SQUARE_HSV;
+extern HSV PLAYSTATION_CIRCLE_HSV;
+extern HSV PLAYSTATION_CROSS_HSV;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [MAC_BASE] = LAYOUT_iso_109(
@@ -60,6 +79,169 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  _______,  _______,                                _______,                                _______,  _______,  _______,    _______,  _______,  _______,  _______,  _______,            _______          )
 };
 
+void eeconfig_update_base_color(HSV color) {
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_0, color.h);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_1, color.s);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_2, color.v);
+}
+
+void eeconfig_update_base_fct_color(HSV color) {
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_3, color.h);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_4, color.s);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_5, color.v);
+}
+
+void eeconfig_update_accent_color(HSV color) {
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_6, color.h);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_7, color.s);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_8, color.v);
+}
+
+void eeconfig_update_playstation_triangle_color(HSV color) {
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_9, color.h);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_10, color.s);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_11, color.v);
+}
+
+void eeconfig_update_playstation_square_color(HSV color) {
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_12, color.h);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_13, color.s);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_14, color.v);
+}
+
+void eeconfig_update_playstation_circle_color(HSV color) {
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_15, color.h);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_16, color.s);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_17, color.v);
+}
+
+void eeconfig_update_playstation_cross_color(HSV color) {
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_18, color.h);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_19, color.s);
+    eeprom_update_byte((uint8_t*)EECONFIG_VIA_CUSTOM_20, color.v);
+}
+
+void eeconfig_read_custom_colors(void) {
+  
+    BASE_COLOR_HSV.h = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_0);
+    BASE_COLOR_HSV.s = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_1);
+    BASE_COLOR_HSV.v = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_2);
+
+    if (BASE_COLOR_HSV.h == 0x00 && BASE_COLOR_HSV.s == 0x00 && BASE_COLOR_HSV.v == 0x00) {
+        BASE_COLOR_HSV = (HSV)DEFAULT_BASE_COLOR_HSV;
+        eeconfig_update_base_color(BASE_COLOR_HSV);
+    }
+    
+    BASE_FCT_COLOR_HSV.h = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_3);
+    BASE_FCT_COLOR_HSV.s = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_4);
+    BASE_FCT_COLOR_HSV.v = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_5);
+
+    if (BASE_FCT_COLOR_HSV.h == 0x00 && BASE_FCT_COLOR_HSV.s == 0x00 && BASE_FCT_COLOR_HSV.v == 0x00) {
+        BASE_FCT_COLOR_HSV = (HSV)DEFAULT_BASE_FCT_COLOR_HSV;
+        eeconfig_update_base_fct_color(BASE_FCT_COLOR_HSV);
+    }
+
+    ACCENT_COLOR_HSV.h = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_6);
+    ACCENT_COLOR_HSV.s = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_7);
+    ACCENT_COLOR_HSV.v = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_8);
+
+    if (ACCENT_COLOR_HSV.h == 0x00 && ACCENT_COLOR_HSV.s == 0x00 && ACCENT_COLOR_HSV.v == 0x00) {
+        ACCENT_COLOR_HSV = (HSV)DEFAULT_ACCENT_COLOR_HSV;
+        eeconfig_update_accent_color(ACCENT_COLOR_HSV);
+    }
+
+    PLAYSTATION_TRIANGLE_HSV.h = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_9);
+    PLAYSTATION_TRIANGLE_HSV.s = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_10);
+    PLAYSTATION_TRIANGLE_HSV.v = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_11);
+
+    if (PLAYSTATION_TRIANGLE_HSV.h == 0x00 && PLAYSTATION_TRIANGLE_HSV.s == 0x00 && PLAYSTATION_TRIANGLE_HSV.v == 0x00) {
+        PLAYSTATION_TRIANGLE_HSV = (HSV)DEFAULT_PLAYSTATION_TRIANGLE_HSV;
+        eeconfig_update_playstation_triangle_color(PLAYSTATION_TRIANGLE_HSV);
+    }
+
+    PLAYSTATION_SQUARE_HSV.h = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_12);
+    PLAYSTATION_SQUARE_HSV.s = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_13);
+    PLAYSTATION_SQUARE_HSV.v = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_14);
+
+    if (PLAYSTATION_SQUARE_HSV.h == 0x00 && PLAYSTATION_SQUARE_HSV.s == 0x00 && PLAYSTATION_SQUARE_HSV.v == 0x00) {
+        PLAYSTATION_SQUARE_HSV = (HSV)DEFAULT_PLAYSTATION_SQUARE_HSV;
+        eeconfig_update_playstation_square_color(PLAYSTATION_SQUARE_HSV);
+    }
+
+    PLAYSTATION_CIRCLE_HSV.h = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_15);
+    PLAYSTATION_CIRCLE_HSV.s = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_16);
+    PLAYSTATION_CIRCLE_HSV.v = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_17);
+
+    if (PLAYSTATION_CIRCLE_HSV.h == 0x00 && PLAYSTATION_CIRCLE_HSV.s == 0x00 && PLAYSTATION_CIRCLE_HSV.v == 0x00) {
+        PLAYSTATION_CIRCLE_HSV = (HSV)DEFAULT_PLAYSTATION_CIRCLE_HSV;
+        eeconfig_update_playstation_circle_color(PLAYSTATION_CIRCLE_HSV);
+    }
+
+    PLAYSTATION_CROSS_HSV.h = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_18);
+    PLAYSTATION_CROSS_HSV.s = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_19);
+    PLAYSTATION_CROSS_HSV.v = eeprom_read_byte((uint8_t*)EECONFIG_VIA_CUSTOM_20);
+
+    if (PLAYSTATION_CROSS_HSV.h == 0x00 && PLAYSTATION_CROSS_HSV.s == 0x00 && PLAYSTATION_CROSS_HSV.v == 0x00) {
+        PLAYSTATION_CROSS_HSV = (HSV)DEFAULT_PLAYSTATION_CROSS_HSV;
+        eeconfig_update_playstation_cross_color(PLAYSTATION_CROSS_HSV);
+    }
+}
+
+
+
+
 void matrix_init_user(void) {
   rgb_matrix_mode(RGB_MATRIX_CUSTOM_TYPING_REACTIVE);
 };
+
+void keyboard_post_init_user(void) {
+    eeconfig_read_custom_colors();
+}
+
+extern void via_set_custom_color(uint8_t index, HSV color);
+
+void via_set_custom_color(uint8_t index, HSV color) {
+    switch (index) {
+        case 4:
+            BASE_COLOR_HSV = color;
+            eeconfig_update_base_color(color);
+            break;
+        case 5:
+            BASE_FCT_COLOR_HSV = color;
+            eeconfig_update_base_fct_color(color);
+            break;
+        case 6:
+            ACCENT_COLOR_HSV = color;
+            eeconfig_update_accent_color(color);
+            break;
+        case 7:
+            PLAYSTATION_TRIANGLE_HSV = color;
+            eeconfig_update_playstation_triangle_color(color);
+            break;
+        case 8:
+            PLAYSTATION_SQUARE_HSV = color;
+            eeconfig_update_playstation_square_color(color);
+            break;
+        case 9:
+            PLAYSTATION_CIRCLE_HSV = color;
+            eeconfig_update_playstation_circle_color(color);
+            break;
+        case 10:
+            PLAYSTATION_CROSS_HSV = color;
+            eeconfig_update_playstation_cross_color(color);
+            break;
+    }
+}
+
+void via_process_dynamic_config(uint8_t index, uint8_t* data) {
+    // Vérifier si l'index est valide (doit être compris entre 0 et 2 pour les trois couleurs)
+    if (index < 7) {
+        // Récupérer les valeurs HSV des données reçues depuis VIA Configurator
+        HSV color;
+        color.h = data[0];
+        color.s = data[1];
+        color.v = data[2];
+
+        via_set_custom_color(index, color);
+    }
+}

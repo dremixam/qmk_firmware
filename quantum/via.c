@@ -32,6 +32,17 @@
 #include "timer.h"
 #include "wait.h"
 #include "version.h" // for QMK_BUILDDATE used in EEPROM magic
+#include "color.h"
+
+extern void via_set_custom_color(uint8_t index, HSV color);
+
+extern HSV BASE_COLOR_HSV;
+extern HSV BASE_FCT_COLOR_HSV;
+extern HSV ACCENT_COLOR_HSV;
+extern HSV PLAYSTATION_TRIANGLE_HSV;
+extern HSV PLAYSTATION_SQUARE_HSV;
+extern HSV PLAYSTATION_CIRCLE_HSV;
+extern HSV PLAYSTATION_CROSS_HSV;
 
 #if defined(AUDIO_ENABLE)
 #    include "audio.h"
@@ -60,7 +71,7 @@
 // Can be called in an overriding via_init_kb() to test if keyboard level code usage of
 // EEPROM is invalid and use/save defaults.
 bool via_eeprom_is_valid(void) {
-    char *  p      = QMK_BUILDDATE; // e.g. "2019-11-05-11:29:54"
+    char   *p      = QMK_BUILDDATE; // e.g. "2019-11-05-11:29:54"
     uint8_t magic0 = ((p[2] & 0x0F) << 4) | (p[3] & 0x0F);
     uint8_t magic1 = ((p[5] & 0x0F) << 4) | (p[6] & 0x0F);
     uint8_t magic2 = ((p[8] & 0x0F) << 4) | (p[9] & 0x0F);
@@ -71,7 +82,7 @@ bool via_eeprom_is_valid(void) {
 // Sets VIA/keyboard level usage of EEPROM to valid/invalid
 // Keyboard level code (eg. via_init_kb()) should not call this
 void via_eeprom_set_valid(bool valid) {
-    char *  p      = QMK_BUILDDATE; // e.g. "2019-11-05-11:29:54"
+    char   *p      = QMK_BUILDDATE; // e.g. "2019-11-05-11:29:54"
     uint8_t magic0 = ((p[2] & 0x0F) << 4) | (p[3] & 0x0F);
     uint8_t magic1 = ((p[5] & 0x0F) << 4) | (p[6] & 0x0F);
     uint8_t magic2 = ((p[8] & 0x0F) << 4) | (p[9] & 0x0F);
@@ -678,13 +689,38 @@ void via_qmk_rgb_matrix_get_value(uint8_t *data) {
             break;
         }
         case id_qmk_rgb_matrix_color: {
-            value_data[0] = rgb_matrix_get_hue();
-            value_data[1] = rgb_matrix_get_sat();
+            value_data[0] = BASE_COLOR_HSV.h;
+            value_data[1] = BASE_COLOR_HSV.s;
             break;
         }
         case id_qmk_rgb_matrix_color2: {
-            value_data[0] = rgb_matrix_get_hue();
-            value_data[1] = rgb_matrix_get_sat();
+            value_data[0] = BASE_FCT_COLOR_HSV.h;
+            value_data[1] = BASE_FCT_COLOR_HSV.s;
+            break;
+        }
+        case id_qmk_rgb_matrix_color3: {
+            value_data[0] = ACCENT_COLOR_HSV.h;
+            value_data[1] = ACCENT_COLOR_HSV.s;
+            break;
+        }
+        case id_qmk_rgb_matrix_color4: {
+            value_data[0] = PLAYSTATION_TRIANGLE_HSV.h;
+            value_data[1] = PLAYSTATION_TRIANGLE_HSV.s;
+            break;
+        }
+        case id_qmk_rgb_matrix_color5: {
+            value_data[0] = PLAYSTATION_CIRCLE_HSV.h;
+            value_data[1] = PLAYSTATION_CIRCLE_HSV.s;
+            break;
+        }
+        case id_qmk_rgb_matrix_color6: {
+            value_data[0] = PLAYSTATION_SQUARE_HSV.h;
+            value_data[1] = PLAYSTATION_SQUARE_HSV.s;
+            break;
+        }
+        case id_qmk_rgb_matrix_color7: {
+            value_data[0] = PLAYSTATION_CROSS_HSV.h;
+            value_data[1] = PLAYSTATION_CROSS_HSV.s;
             break;
         }
     }
@@ -714,10 +750,37 @@ void via_qmk_rgb_matrix_set_value(uint8_t *data) {
         }
         case id_qmk_rgb_matrix_color: {
             rgb_matrix_sethsv_noeeprom(value_data[0], value_data[1], rgb_matrix_get_val());
+            via_set_custom_color(*value_id, (HSV){.h = value_data[0], .s = value_data[1], .v = rgb_matrix_get_val()});
             break;
         }
         case id_qmk_rgb_matrix_color2: {
             rgb_matrix_sethsv_noeeprom(value_data[0], value_data[1], rgb_matrix_get_val());
+            via_set_custom_color(*value_id, (HSV){.h = value_data[0], .s = value_data[1], .v = rgb_matrix_get_val()});
+            break;
+        }
+        case id_qmk_rgb_matrix_color3: {
+            rgb_matrix_sethsv_noeeprom(value_data[0], value_data[1], rgb_matrix_get_val());
+            via_set_custom_color(*value_id, (HSV){.h = value_data[0], .s = value_data[1], .v = rgb_matrix_get_val()});
+            break;
+        }
+        case id_qmk_rgb_matrix_color4: {
+            rgb_matrix_sethsv_noeeprom(value_data[0], value_data[1], rgb_matrix_get_val());
+            via_set_custom_color(*value_id, (HSV){.h = value_data[0], .s = value_data[1], .v = rgb_matrix_get_val()});
+            break;
+        }
+        case id_qmk_rgb_matrix_color5: {
+            rgb_matrix_sethsv_noeeprom(value_data[0], value_data[1], rgb_matrix_get_val());
+            via_set_custom_color(*value_id, (HSV){.h = value_data[0], .s = value_data[1], .v = rgb_matrix_get_val()});
+            break;
+        }
+        case id_qmk_rgb_matrix_color6: {
+            rgb_matrix_sethsv_noeeprom(value_data[0], value_data[1], rgb_matrix_get_val());
+            via_set_custom_color(*value_id, (HSV){.h = value_data[0], .s = value_data[1], .v = rgb_matrix_get_val()});
+            break;
+        }
+        case id_qmk_rgb_matrix_color7: {
+            rgb_matrix_sethsv_noeeprom(value_data[0], value_data[1], rgb_matrix_get_val());
+            via_set_custom_color(*value_id, (HSV){.h = value_data[0], .s = value_data[1], .v = rgb_matrix_get_val()});
             break;
         }
     }

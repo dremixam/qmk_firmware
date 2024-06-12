@@ -118,27 +118,13 @@ enum physical_keys {
 
 #    include QMK_KEYBOARD_H
 
-#    define RED                                        \
-        (HSV) {                                        \
-            .h = ((0 * 255) / 360), .s = 255, .v = 255 \
-        }
-#    define GREEN                                        \
-        (HSV) {                                          \
-            .h = ((120 * 255) / 360), .s = 255, .v = 255 \
-        }
-#    define BLUE                                         \
-        (HSV) {                                          \
-            .h = ((240 * 255) / 360), .s = 255, .v = 255 \
-        }
-
-#    define BASE_COLOR_HSV rgb_to_hsv((RGB){.r = 0x64, .g = 0x00, .b = 0xFF})
-#    define BASE_FCT_COLOR_HSV rgb_to_hsv((RGB){.r = 0x32, .g = 0x00, .b = 0xFF})
-#    define ACCENT_COLOR_HSV GREEN
-
-#    define PLAYSTATION_TRIANGLE_HSV rgb_to_hsv((RGB){.r = 0x24, .g = 0xE6, .b = 0x9F})
-#    define PLAYSTATION_SQUARE_HSV rgb_to_hsv((RGB){.r = 0xF9, .g = 0x5E, .b = 0xFA})
-#    define PLAYSTATION_CIRCLE_HSV rgb_to_hsv((RGB){.r = 0xFF, .g = 0x52, .b = 0x5E})
-#    define PLAYSTATION_CROSS_HSV rgb_to_hsv((RGB){.r = 0x62, .g = 0xB8, .b = 0xE9})
+extern HSV BASE_COLOR_HSV;
+extern HSV BASE_FCT_COLOR_HSV;
+extern HSV ACCENT_COLOR_HSV;
+extern HSV PLAYSTATION_TRIANGLE_HSV;
+extern HSV PLAYSTATION_SQUARE_HSV;
+extern HSV PLAYSTATION_CIRCLE_HSV;
+extern HSV PLAYSTATION_CROSS_HSV;
 
 // Fonction de conversion RGB -> HSV
 HSV rgb_to_hsv(RGB rgb) {
@@ -196,14 +182,13 @@ HSV interpolateHSV(HSV start, HSV end, int offset) {
 }
 
 static HSV TYPING_REACTIVE_math(HSV hsv, uint16_t offset) {
-    HSV start = GREEN;
-    return interpolateHSV(start, hsv, offset);
+    return interpolateHSV(ACCENT_COLOR_HSV, hsv, offset);
 }
 
 bool effect_runner_reactive_custom(effect_params_t* params, reactive_f effect_func) {
     RGB_MATRIX_USE_LIMITS(led_min, led_max);
 
-    uint16_t max_tick = 65535 / qadd8(rgb_matrix_config.speed, 1);
+    uint16_t max_tick = 65535 / qadd8(rgb_matrix_config.speed / 8, 1);
     for (uint8_t i = led_min; i < led_max; i++) {
         RGB_MATRIX_TEST_LED_FLAGS();
         uint16_t tick = max_tick;
@@ -228,6 +213,8 @@ bool effect_runner_reactive_custom(effect_params_t* params, reactive_f effect_fu
             case PK_I:
             case PK_O:
             case PK_P:
+            case PK_LBRC:
+            case PK_RBRC:
             case PK_A:
             case PK_S:
             case PK_D:
@@ -237,12 +224,15 @@ bool effect_runner_reactive_custom(effect_params_t* params, reactive_f effect_fu
             case PK_J:
             case PK_K:
             case PK_L:
+            case PK_SCLN:
+            case PK_QUOT:
             case PK_Z:
             case PK_X:
             case PK_C:
             case PK_V:
             case PK_B:
             case PK_N:
+            case PK_M:
             case PK_COMM:
             case PK_DOT:
             case PK_SLSH:
@@ -270,6 +260,10 @@ bool effect_runner_reactive_custom(effect_params_t* params, reactive_f effect_fu
             case PK_0:
             case PK_MINS:
             case PK_EQL:
+            case PK_LEFT:
+            case PK_DOWN:
+            case PK_RGHT:
+            case PK_UP:
                 color = BASE_COLOR_HSV;
                 break;
             case PK_CIRCLE:
@@ -286,8 +280,11 @@ bool effect_runner_reactive_custom(effect_params_t* params, reactive_f effect_fu
                 break;
         }
 
-        uint16_t offset = scale16by8(tick, qadd8(rgb_matrix_config.speed, 1));
-        RGB      rgb    = rgb_matrix_hsv_to_rgb(effect_func(color, offset));
+        uint16_t offset = scale16by8(tick, qadd8(rgb_matrix_config.speed / 8, 1));
+
+        HSV hsv = effect_func(color, offset);
+        hsv.v   = rgb_matrix_get_val();
+        RGB rgb = rgb_matrix_hsv_to_rgb(hsv);
         rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
     }
     return rgb_matrix_check_finished_leds(led_max);
@@ -299,6 +296,7 @@ bool TYPING_REACTIVE(effect_params_t* params) {
     RGB rgb = rgb_matrix_hsv_to_rgb(rgb_matrix_config.hsv);
 
     for (uint8_t i = led_min; i < led_max; i++) {
+        RGB_MATRIX_TEST_LED_FLAGS();
         rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
     }
 

@@ -131,6 +131,11 @@ enum via_qmk_rgb_matrix_value {
     id_qmk_rgb_matrix_effect_speed = 3,
     id_qmk_rgb_matrix_color        = 4,
     id_qmk_rgb_matrix_color2        = 5,
+    id_qmk_rgb_matrix_color3        = 6,
+    id_qmk_rgb_matrix_color4        = 7,
+    id_qmk_rgb_matrix_color5        = 8,
+    id_qmk_rgb_matrix_color6        = 9,
+    id_qmk_rgb_matrix_color7        = 10,
 };
 
 enum via_qmk_led_matrix_value {
