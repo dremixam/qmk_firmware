@@ -187,9 +187,6 @@ void eeconfig_read_custom_colors(void) {
     }
 }
 
-
-
-
 void matrix_init_user(void) {
   rgb_matrix_mode(RGB_MATRIX_CUSTOM_TYPING_REACTIVE);
 };
